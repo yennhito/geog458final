@@ -85,6 +85,10 @@
         minZoom: 3,
         detectRetina: true});
 
+        // add map base
+        // 2. Add a base map.
+        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png').addTo(mymap);
+
          var grayscale = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png').addTo(mymap);
          var streets = L.tileLayer('http://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}@2x.png');
          var satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}@2x');
@@ -94,12 +98,12 @@
 
          var hospital_icon = L.icon({
              iconUrl: 'assets/grocery.svg',
-             iconSize: [20, 20], // size of the icon
+             iconSize: [15, 20], // size of the icon
          });
 
          var clinic_icon = L.icon({
              iconUrl: 'assets/clinicicon.svg',
-             iconSize: [20, 20], // size of the icon
+             iconSize: [15, 20], // size of the icon
          });
 
         hospital= L.geoJson.ajax("assets/hospital.geojson", {
