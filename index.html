@@ -72,40 +72,65 @@
     // 2. Add a base map.
     L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png').addTo(mymap);
 
-// adding hospitals
-    var hospital = null;
-    var hospital_icon = L.icon({
-        iconUrl: 'assets/hospitalicon.svg',
-        iconSize: [25, 25], // size of the icon
-    });
-    // Get GeoJSON and put on it on the map when it loads
-    hospital= L.geoJson.ajax("assets/hospitalsss.geojson", {
-      pointToLayer: function (feature, latlng) {
-        return L.marker(latlng, {icon: hospital_icon});
-    },
-        attribution: 'Airports &copy; Data.gov | US States &copy; guy | Base Map &copy; CartoDB | Made By Yen-nhi To'
-    }).addTo(mymap);
+    // adding hospitals
+        var hospital = null;
+        var hospital_icon = L.icon({
+            iconUrl: 'assets/hospitalicon.svg',
+            iconSize: [40, 40], // size of the icon
+        });
+        // Get GeoJSON and put on it on the map when it loads
+        hospital= L.geoJson.ajax("assets/hospitalsss.geojson", {
+          pointToLayer: function (feature, latlng) {
+            return L.marker(latlng, {icon: hospital_icon});
+        },
+            attribution: 'Airports &copy; Data.gov | US States &copy; guy | Base Map &copy; CartoDB | Made By Yen-nhi To'
+        }).addTo(mymap);
 
-// adding clinics
-    var clinic = null;
-    var clinic_icon = L.icon({
-        iconUrl: 'assets/clincicon.svg',
-        iconSize: [20, 20], // size of the icon
-    });
-    // Get GeoJSON and put on it on the map when it loads
-    clinic= L.geoJson.ajax("assets/clinics.geojson", {
-      pointToLayer: function (feature, latlng) {
-        return L.marker(latlng, {icon: clinic_icon});
-    },
-        attribution: 'Airports &copy; Data.gov | US States &copy; guy | Base Map &copy; CartoDB | Made By Yen-nhi To'
-    }).addTo(mymap);
+    // adding clinics
+        var clinic = null;
+        var clinic_icon = L.icon({
+            iconUrl: 'assets/clincicon.svg',
+            iconSize: [40, 40], // size of the icon
+        });
+        // Get GeoJSON and put on it on the map when it loads
+        clinic= L.geoJson.ajax("assets/clinics.geojson", {
+          pointToLayer: function (feature, latlng) {
+            return L.marker(latlng, {icon: clinic_icon});
+        },
+            attribution: 'Airports &copy; Data.gov | US States &copy; guy | Base Map &copy; CartoDB | Made By Yen-nhi To'
+        }).addTo(mymap);
 
-    // 8. Add county lines
-  // create state variable, and assign null to it.
-  var states = null;
-  states = L.geoJson.ajax("assets/us-states.geojson", {
-      style: style
-  }).addTo(mymap);
+        colors = chroma.scale('Blues').colors(5);
+
+        function setColor(lifeex) {
+            var id = 0;
+            if (lifeex > 80.56) { id = 4; }
+            else if (lifeex > 79.92 && lifeex <= 80.56) { id = 3; }
+            else if (lifeex > 79.19 && lifeex <= 79.92) { id = 2; }
+            else if (lifeex > 78.36 &&  lifeex <= 79.19) { id = 1; }
+            else  { id = 0; }
+            return colors[id];
+        }
+
+        // 7. Set style function that sets fill color.md property equal to airport density
+        function style(feature) {
+            return {
+                fillColor: setColor(feature.properties.LIFEEX),
+                fillOpacity: 0.4,
+                weight: 2,
+                opacity: 1,
+                color: '#b4b4b4',
+                dashArray: '4'
+            };
+        }
+
+        // 8. Add state polygons
+        // create state variable, and assign null to it.
+        var states = null;
+        states = L.geoJson.ajax("assets/lifeexx.geojson", {
+            style: style
+        }).addTo(mymap);
+;
 
 
 
