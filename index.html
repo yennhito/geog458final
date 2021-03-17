@@ -59,7 +59,7 @@
 <body>
 <!-- Our web map and content will go here -->
 <div id="map"></div>
-<script>
+<script type="text/javascript">
 
     // 1. Create a map object.
     var mymap = L.map('map', {
@@ -69,8 +69,10 @@
         minZoom: 3,
         detectRetina: true});
 
-    // 2. Add a base map.
-    L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png').addTo(mymap);
+   var grayscale = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}@2x.png').addTo(mymap);
+   var streets = L.tileLayer('http://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}@2x.png');
+   var satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}@2x');
+
 
     // adding hospitals
         var hospital = null;
@@ -80,6 +82,10 @@
         });
         // Get GeoJSON and put on it on the map when it loads
         hospital= L.geoJson.ajax("assets/hospitalsss.geojson", {
+          onEachFeature: function (feature, layer) {
+            layer.bindPopup( "Hospital:" + feature.properties.NAME + "<br> City:" +feature.properties.CITY);
+            return feature.properties.STATE;
+          },
           pointToLayer: function (feature, latlng) {
             return L.marker(latlng, {icon: hospital_icon});
         },
@@ -90,13 +96,27 @@
         var clinic = null;
         var clinic_icon = L.icon({
             iconUrl: 'assets/clincicon.svg',
-            iconSize: [40, 40], // size of the icon
+            iconSize: [30, 30], // size of the icon
         });
         // Get GeoJSON and put on it on the map when it loads
         clinic= L.geoJson.ajax("assets/clinics.geojson", {
+          onEachFeature: function (feature, layer) {
+            layer.bindPopup( "Clinic:"+ feature.properties.NAME + "<br> City:" +feature.properties.CITY);
+            return feature.properties.STATE;
+          },
           pointToLayer: function (feature, latlng) {
             return L.marker(latlng, {icon: clinic_icon});
         },
+            attribution: 'Airports &copy; Data.gov | US States &copy; guy | Base Map &copy; CartoDB | Made By Yen-nhi To'
+        }).addTo(mymap);
+
+// life exp
+        var lifexp = null;
+        lifexp= L.geoJson.ajax("assets/lifeexx.geojson", {
+          onEachFeature: function (feature, layer) {
+            layer.bindPopup( "Life Expectancy at Birth:"+ feature.properties.LIFEEX);
+            return feature.properties.STATE;
+          },
             attribution: 'Airports &copy; Data.gov | US States &copy; guy | Base Map &copy; CartoDB | Made By Yen-nhi To'
         }).addTo(mymap);
 
@@ -130,10 +150,41 @@
         states = L.geoJson.ajax("assets/lifeexx.geojson", {
             style: style
         }).addTo(mymap);
-;
+
+var baseLayers = {
+  'Grayscale': grayscale,
+  'Streets': streets,
+  'Satellite': satellite
+};
 
 
 
+
+
+// 9. Create Leaflet Control Object for Legend
+  var legend = L.control({position: 'bottomright'});
+
+// 10. Function that runs when legend is added to map
+legend.onAdd = function () {
+
+    // Create Div Element and Populate it with HTML
+    var div = L.DomUtil.create('div', 'legend');
+    div.innerHTML += '<b> Life Expectancy At Birth <b><br />';
+    div.innerHTML += '<i style="background: ' + colors[4] + '; opacity: 0.5"></i><p> 80.56+</p>';
+    div.innerHTML += '<i style="background: ' + colors[3] + '; opacity: 0.5"></i><p> 79.92-80.56 </p>';
+    div.innerHTML += '<i style="background: ' + colors[2] + '; opacity: 0.5"></i><p> 79.19-79.92 </p>';
+    div.innerHTML += '<i style="background: ' + colors[1] + '; opacity: 0.5"></i><p> 78.36-79.19 </p>';
+    div.innerHTML += '<i style="background: ' + colors[0] + '; opacity: 0.5"></i><p> 76.61-78.36</p>';
+    div.innerHTML += '<hr><b>Key <b><br />';
+    div.innerHTML += '<img src="assets/hospitalicon.svg" alt="Hospital Symbol"><\/i><p> Hospital <\/p>';
+    div.innerHTML += '<img src="assets/clincicon.svg" alt="Clinic Symbol"><\/i><p> Clinic <\/p>';
+
+    // Return the Legend div containing the HTML content
+    return div;
+};
+
+// 11. Add a legend to map
+legend.addTo(mymap);
 
   // 12. Add a scale bar to map
   L.control.scale({position: 'bottomleft'}).addTo(mymap);
